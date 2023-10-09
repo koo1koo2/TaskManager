@@ -68,18 +68,70 @@ public class App {
                     //add new task to the tasklist
                     taskList.add(newTask);
                     System.out.println("The new task is added to the list.");
+                   
+                    break;
+                case 2:    
+                    // List the task titles with their index to the user
+                    for (int i = 0; i < taskList.size(); i++) {
+                        Task taskListItem = taskList.get(i);
+                        String taskTitle = taskListItem.getTitle();
+                        System.out.println(i + 1 + ". " + taskTitle);
+                    }
 
-                    System.out.println("1");
+                    //Prompt user for the task to update 
+                    validInput = false;
+                    int taskIndex = 0;
+                    while (!validInput) {
+                        System.out.println("Enter the index of the task you want to update: ");
+                        try {
+                            int index = scanner.nextInt();
+                            scanner.nextLine(); // Consume the newline character
+                            taskIndex = index - 1; // Convert to a 0-based index
+                            if (taskIndex >= 0 && taskIndex < taskList.size()) {
+                                validInput = true;
+                            } else {
+                                System.out.println("Please enter a valid number.");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Please enter a valid number.");
+                        }
+                    }
+                    Task selectedTask = taskList.get(taskIndex);
+
+                    //Prompt user for updated task details
+                    //TODO validate user input
+                    System.out.println("Enter new description: ");
+                    String newDescription = scanner.nextLine();
+
+                    System.out.println(" Enter new due date (yyyy-MM-dd): ");
+                    String newDueDateString = scanner.nextLine();
+                    LocalDate newDueDate = LocalDate.parse(newDueDateString);
+
+                    //Update the selected task in the task list
+                    selectedTask.setDescription(newDescription);
+                    selectedTask.setDueDate(newDueDate);
+
+                    //Notify the user 
+                    System.out.println("Task updated successfully.");
                     break;
-                case 2:
-                    System.out.println("2");
+
+                case 3:
+                    //TODO Delete a Task
+                    //TODO Prompt user for the task to delete (e.g., by index)
+                    //TODO Remove the selected task from the task list
                     break;
+                case 4:
+                    // TODO List Tasks
+                    // TODO Display a list of all tasks in the task list
+                    break;
+                
                 case 5:
                 // TODO Ask if user really wants to quit, if yes quit, if no return
                     System.out.println("quit");
                     scanner.close();
                     isRunning = false;
                 default:
+                //TODO 
                     System.out.println("default");
                     break;
 

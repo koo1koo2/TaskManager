@@ -1,12 +1,25 @@
 import java.time.LocalDate;
 
 public class Task {
-    String title;
-    String description;
-    LocalDate dueDate;
+    private String title;
+    private String description;
+    private LocalDate dueDate;
 
     //getter for a whole task TODO
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
     
+    public String getDueDate() {
+        String dueDateString = dueDate.toString();
+        return dueDateString;
+    }
+    
+
     //setters for the attributes separately
     public void setTitle(String title) {
         this.title = title;

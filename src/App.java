@@ -4,6 +4,25 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
+
+     // Validation method for user integer input
+    
+    public static boolean validateIntegerInput(String input, int max) {
+        int number;
+        try {
+            number = Integer.parseInt(input);
+        } catch (Exception e) {
+            return false;
+        }
+    
+        if(number > 0 && number <= max) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    //MAIN
     public static void main(String[] args)  {
         // Create a task list to store tasks
         ArrayList<Task> taskList = new ArrayList<>();
@@ -14,6 +33,7 @@ public class App {
         // Display a welcome message
         System.out.println("Welcome to the Task Manager Application!");
 
+             
         // Main application loop
         boolean isRunning = true;
         while (isRunning) {
@@ -24,13 +44,25 @@ public class App {
             System.out.println("3. Delete a Task");
             System.out.println("4. List Tasks");
             System.out.println("5. Quit");
-            System.out.print("Enter your choice: ");
+            
 
-            // Read user input
-            // TODO validate user input
-            int choice = scanner.nextInt();
-            scanner.nextLine(); 
+            // Read and validate user input
+            String input = "";
+     
+            boolean isValid = false;
+            while(!isValid) {
+                System.out.print("Enter your choice: ");
+                input = scanner.nextLine();
+                isValid = validateIntegerInput(input, 5);
+                if(!isValid) {
+                    System.out.println("Invalid number. Please enter a valid number.");
+                }
+            }
 
+            //Convert user input string to integer
+            int choice = Integer.parseInt(input);
+
+            //Handle the different user choises
             switch(choice) {
                 case 1:
                     //prompt user for task title, make sure it`s not an empty string 
@@ -78,24 +110,22 @@ public class App {
                         System.out.println(i + 1 + ". " + taskTitle);
                     }
 
-                    //Prompt user for the task to update 
+                    //Prompt user for the task to update and validate user input
                     validInput = false;
-                    int taskIndex = 0;
+                    String index = "";
                     while (!validInput) {
                         System.out.println("Enter the index of the task you want to update: ");
-                        try {
-                            int index = scanner.nextInt();
-                            scanner.nextLine(); // Consume the newline character
-                            taskIndex = index - 1; // Convert to a 0-based index
-                            if (taskIndex >= 0 && taskIndex < taskList.size()) {
-                                validInput = true;
-                            } else {
-                                System.out.println("Please enter a valid number.");
-                            }
-                        } catch (Exception e) {
-                            System.out.println("Please enter a valid number.");
+                        index = scanner.nextLine();
+                        validInput = validateIntegerInput(index, taskList.size());
+                        if(!validInput) {
+                            System.out.println("Invalid input.");
                         }
                     }
+
+                    // Convert user input to integer, substract 1 to corrigate to 0 index.
+                    int taskIndex = Integer.parseInt(index) - 1;
+
+                    // Get the selected task
                     Task selectedTask = taskList.get(taskIndex);
 
                     //Prompt user for updated task details

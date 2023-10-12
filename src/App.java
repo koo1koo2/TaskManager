@@ -22,6 +22,18 @@ public class App {
         }
     }
     
+    // TODO Validation method for date input
+    // Method to list tasks
+    public static void listTasks(ArrayList<Task> taskList) {
+        for (int i = 0; i < taskList.size(); i++) {
+            Task taskListItem = taskList.get(i);
+            String taskTitle = taskListItem.getTitle();
+            String taskDescription = taskListItem.getDescription();
+            String taskDueDate = taskListItem.getDueDate();
+            System.out.println(i + 1 + ". " + taskTitle + " - due date : " + taskDueDate + "\n description: " + taskDescription);  
+            }
+    }
+
     //MAIN
     public static void main(String[] args)  {
         // Create a task list to store tasks
@@ -104,26 +116,22 @@ public class App {
                     break;
                 case 2:    
                     // List the task titles with their index to the user
-                    for (int i = 0; i < taskList.size(); i++) {
-                        Task taskListItem = taskList.get(i);
-                        String taskTitle = taskListItem.getTitle();
-                        System.out.println(i + 1 + ". " + taskTitle);
-                    }
+                    listTasks(taskList);
 
                     //Prompt user for the task to update and validate user input
                     validInput = false;
-                    String index = "";
+                    String updateIndex = "";
                     while (!validInput) {
                         System.out.println("Enter the index of the task you want to update: ");
-                        index = scanner.nextLine();
-                        validInput = validateIntegerInput(index, taskList.size());
+                        updateIndex = scanner.nextLine();
+                        validInput = validateIntegerInput(updateIndex, taskList.size());
                         if(!validInput) {
                             System.out.println("Invalid input.");
                         }
                     }
 
                     // Convert user input to integer, substract 1 to corrigate to 0 index.
-                    int taskIndex = Integer.parseInt(index) - 1;
+                    int taskIndex = Integer.parseInt(updateIndex) - 1;
 
                     // Get the selected task
                     Task selectedTask = taskList.get(taskIndex);
@@ -146,25 +154,40 @@ public class App {
                     break;
 
                 case 3:
-                    //TODO Delete a Task
-                    //TODO Prompt user for the task to delete (e.g., by index)
-                    //TODO Remove the selected task from the task list
+                    //Delete a Task
+                    //Prompt user for the task to delete and validate the input
+                    validInput = false;
+                    String deleteIndex = "";
+                    while (!validInput) {
+                        System.out.println("Enter the index of the task you want to delete: ");
+                        deleteIndex = scanner.nextLine();
+                        validInput = validateIntegerInput(deleteIndex, taskList.size());
+                        if(!validInput) {
+                            System.out.println("Invalid input.");
+                        }
+                    }
+                    //Remove the selected task from the task list
+                    taskIndex = Integer.parseInt(deleteIndex) - 1;
+                    taskList.remove(taskIndex);
+                    System.out.println("Task deleted.");
+
                     break;
                 case 4:
-                    // TODO List Tasks
-                    // TODO Display a list of all tasks in the task list
+                    //Display a list of all tasks in the task list
+                    listTasks(taskList);
                     break;
                 
                 case 5:
-                // TODO Ask if user really wants to quit, if yes quit, if no return
-                    System.out.println("quit");
-                    scanner.close();
-                    isRunning = false;
-                default:
-                //TODO 
-                    System.out.println("default");
+                    //Ask user if they really want to quit, if yes quit, else return
+                    System.out.println("Do you want to quit? y/n: ");
+                    String answer = scanner.nextLine();
+                    
+                    if(answer.contains("y")) {
+                        scanner.close();
+                        isRunning = false;
+                        System.out.println("quit");
+                    }
                     break;
-
             }
         }
     }

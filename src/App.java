@@ -1,7 +1,15 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.io.File;
 
 public class App {
 
@@ -22,7 +30,17 @@ public class App {
         }
     }
     
-    // TODO Validation method for date input
+    // Validation method for date input
+    public static boolean validateDateInput(String input, String formatString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+        try {
+            LocalDate.parse(input, formatter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     // Method to list tasks
     public static void listTasks(ArrayList<Task> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
@@ -32,6 +50,34 @@ public class App {
             String taskDueDate = taskListItem.getDueDate();
             System.out.println(i + 1 + ". " + taskTitle + " - due date : " + taskDueDate + "\n description: " + taskDescription);  
             }
+    }
+//TODO Files
+    private static ArrayList<Task> loadTasksFromFile(String fileName) {
+        ArrayList<Task> taskList = new ArrayList<>();
+        try {
+            File taskFile = new File(fileName);
+            Scanner fileReader = new Scanner(taskFile);
+            while (fileReader.hasNextLine()){
+                String line = fileReader.nextLine();
+                Task task = Task.fromString(line);
+                taskList.add(task);
+            }
+            fileReader.close();
+            System.out.println("Tasks loaded.");
+            return taskList;
+        
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+            return taskList;
+        }
+    }
+//TODO delete the existing file and save the new or overwrite it
+    private static void saveTasksToFile(ArrayList<Task> taskList) {
+        try {
+
+        } catch (IOException e) {
+            // TODO Handle exceptions (e.g., file not found, write errors)
+        }
     }
 
     //MAIN
@@ -56,7 +102,7 @@ public class App {
             System.out.println("3. Delete a Task");
             System.out.println("4. List Tasks");
             System.out.println("5. Quit");
-            
+            //TODO load from file, save to file(overwrite?)
 
             // Read and validate user input
             String input = "";
@@ -90,21 +136,21 @@ public class App {
                     System.out.println("Enter task description (optional): ");
                     String description = scanner.nextLine();
                     
-                    //prompt user for task due date, validate user input
+                    //TODO prompt user for task due date, validate user input
                     boolean validInput = false;
                     LocalDate dueDate = null;
-
+                    String dateInput = "";
+                    String formatString = "dd-MM-yy";
                     while (!validInput) {
-                        System.out.println("Enter due date (yyyy-MM-dd): ");
-
-                        try {
-                            String dueDateString = scanner.nextLine();
-                            dueDate = LocalDate.parse(dueDateString);
-                            validInput = true; // Valid input; exit the loop
-                        } catch (DateTimeParseException e) {
-                            System.out.println("Invalid date format. Please use yyyy-MM-dd.");
+                        System.out.println("Enter due date ("+formatString+"): ");
+                        dateInput = scanner.nextLine();
+                        validInput = validateDateInput(dateInput, formatString);
+                        if(!validInput) {
+                            System.out.println("Invalid date format. Please use "+formatString+ ".");
                         }
                     }
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+                    dueDate = LocalDate.parse(dateInput, formatter);
                 
                     //create the new task object 
                     Task newTask = new Task(title, description, dueDate);
@@ -138,14 +184,32 @@ public class App {
 
                     //Prompt user for updated task details
                     //TODO validate user input
+                    String newTitle = "";
+                    System.out.println("Enter new task title: ");
+                    String newTitleInput = scanner.nextLine();
+                    if (newTitleInput.isEmpty()) {
+                        newTitle = selectedTask.getTitle();
+                        System.out.println("Title did not change.");
+                    } else {
+                        newTitle = newTitleInput;
+                    }
+                    
                     System.out.println("Enter new description: ");
-                    String newDescription = scanner.nextLine();
-
-                    System.out.println(" Enter new due date (yyyy-MM-dd): ");
+                    String newDescriptionInput = scanner.nextLine();
+                    String newDescription = "";
+                    if (newDescriptionInput.isEmpty()){
+                        newDescription = selectedTask.getDescription();
+                        System.out.println("Description did not change.");
+                    } else {
+                        newDescription = newDescriptionInput;
+                    }
+//TODO
+                    System.out.println(" Enter new due date (dd-MM-yy): ");
                     String newDueDateString = scanner.nextLine();
                     LocalDate newDueDate = LocalDate.parse(newDueDateString);
 
                     //Update the selected task in the task list
+                    selectedTask.setTitle(newTitle);
                     selectedTask.setDescription(newDescription);
                     selectedTask.setDueDate(newDueDate);
 

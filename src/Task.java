@@ -20,7 +20,7 @@ public class Task {
     }
     
 
-    //setters for the attributes separately
+    //setters for the attributes 
     public void setTitle(String title) {
         this.title = title;
     }

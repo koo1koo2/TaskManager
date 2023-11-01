@@ -1,13 +1,9 @@
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.io.File;
 
@@ -71,16 +67,24 @@ public class App {
             return taskList;
         }
     }
-//TODO delete the existing file and save the new or overwrite it
-    private static void saveTasksToFile(ArrayList<Task> taskList) {
+    // Save the tasklist to a file
+    private static void saveTasksToFile(ArrayList<Task> taskList, String fileName) {
         try {
+            //Convert tasks to csv string, save them to file, each task in new line
+            FileWriter writer = new FileWriter(fileName);
+            for (Task i : taskList) {
+                String taskString = i.toFileString();
+                writer.write(taskString + "\n");
+            }
+            writer.close();
+            System.out.println("Tasks saved");
 
         } catch (IOException e) {
-            // TODO Handle exceptions (e.g., file not found, write errors)
+            System.out.println("An error occured.");
         }
     }
 
-    //MAIN
+    // MAIN
     public static void main(String[] args)  {
         // Create a task list to store tasks
         ArrayList<Task> taskList = new ArrayList<>();
@@ -97,12 +101,14 @@ public class App {
         while (isRunning) {
             // Display menu options
             System.out.println("\nMenu:");
-            System.out.println("1. Add a Task");
-            System.out.println("2. Update a Task");
-            System.out.println("3. Delete a Task");
-            System.out.println("4. List Tasks");
-            System.out.println("5. Quit");
-            //TODO load from file, save to file(overwrite?)
+            System.out.println("1. Load tasks from file");
+            System.out.println("2. Add a Task");
+            System.out.println("3. Update a Task");
+            System.out.println("4. Delete a Task");
+            System.out.println("5. List Tasks");
+            System.out.println("6. Save tasks to file");
+            System.out.println("7. Quit");
+            
 
             // Read and validate user input
             String input = "";
@@ -111,19 +117,26 @@ public class App {
             while(!isValid) {
                 System.out.print("Enter your choice: ");
                 input = scanner.nextLine();
-                isValid = validateIntegerInput(input, 5);
+                isValid = validateIntegerInput(input, 7);
                 if(!isValid) {
                     System.out.println("Invalid number. Please enter a valid number.");
                 }
             }
 
-            //Convert user input string to integer
+            // Convert user input string to integer
             int choice = Integer.parseInt(input);
 
-            //Handle the different user choises
+            // Handle the different user choises
             switch(choice) {
                 case 1:
-                    //prompt user for task title, make sure it`s not an empty string 
+                    // Prompt user for filename
+                    System.out.println("Enter filename: ");
+                    String fileName = scanner.nextLine();
+                    //load tasks from file
+                    taskList = loadTasksFromFile(fileName);
+                    break;
+                case 2:
+                    // Prompt user for task title, make sure it`s not an empty string 
                     String title = "";
                     while (title.isEmpty()) {
                         System.out.println("Enter task title: ");
@@ -132,11 +145,11 @@ public class App {
                             System.out.println("Title is required.");
                         }
                     }
-                    //prompt user for task description
+                    // Prompt user for task description
                     System.out.println("Enter task description (optional): ");
                     String description = scanner.nextLine();
                     
-                    //TODO prompt user for task due date, validate user input
+                    // Prompt user for task due date, validate user input
                     boolean validInput = false;
                     LocalDate dueDate = null;
                     String dateInput = "";
@@ -152,19 +165,19 @@ public class App {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
                     dueDate = LocalDate.parse(dateInput, formatter);
                 
-                    //create the new task object 
+                    // Create the new task object 
                     Task newTask = new Task(title, description, dueDate);
                 
-                    //add new task to the tasklist
+                    // Add new task to the tasklist
                     taskList.add(newTask);
                     System.out.println("The new task is added to the list.");
                    
                     break;
-                case 2:    
+                case 3:    
                     // List the task titles with their index to the user
                     listTasks(taskList);
 
-                    //Prompt user for the task to update and validate user input
+                    // Prompt user for the task to update and validate user input
                     validInput = false;
                     String updateIndex = "";
                     while (!validInput) {
@@ -182,7 +195,7 @@ public class App {
                     // Get the selected task
                     Task selectedTask = taskList.get(taskIndex);
 
-                    //Prompt user for updated task details
+                    // Prompt user for updated task details
                     //TODO validate user input
                     String newTitle = "";
                     System.out.println("Enter new task title: ");
@@ -203,23 +216,24 @@ public class App {
                     } else {
                         newDescription = newDescriptionInput;
                     }
-//TODO
+                    //TODO
                     System.out.println(" Enter new due date (dd-MM-yy): ");
                     String newDueDateString = scanner.nextLine();
                     LocalDate newDueDate = LocalDate.parse(newDueDateString);
 
-                    //Update the selected task in the task list
+                    // Update the selected task in the task list
                     selectedTask.setTitle(newTitle);
                     selectedTask.setDescription(newDescription);
                     selectedTask.setDueDate(newDueDate);
 
-                    //Notify the user 
+                    // Notify the user 
                     System.out.println("Task updated successfully.");
                     break;
 
-                case 3:
-                    //Delete a Task
-                    //Prompt user for the task to delete and validate the input
+                case 4:
+                    // Delete a Task
+                    //TODO list the tasks
+                    // Prompt user for the task to delete and validate the input
                     validInput = false;
                     String deleteIndex = "";
                     while (!validInput) {
@@ -230,18 +244,24 @@ public class App {
                             System.out.println("Invalid input.");
                         }
                     }
-                    //Remove the selected task from the task list
+                    // Remove the selected task from the task list
                     taskIndex = Integer.parseInt(deleteIndex) - 1;
                     taskList.remove(taskIndex);
                     System.out.println("Task deleted.");
 
                     break;
-                case 4:
-                    //Display a list of all tasks in the task list
+                case 5:
+                    // Display a list of all tasks in the task list
                     listTasks(taskList);
                     break;
-                
-                case 5:
+                case 6:
+                //TODO Save tasks to file
+                //TODO prompt filename, if exists- ask to overwrite, if not ask to create new
+                    System.out.println("Enter a filename to save to: ");
+                    String file = scanner.nextLine();
+                    saveTasksToFile(taskList, file);
+                    break;
+                case 7:
                     //Ask user if they really want to quit, if yes quit, else return
                     System.out.println("Do you want to quit? y/n: ");
                     String answer = scanner.nextLine();

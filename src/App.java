@@ -10,7 +10,6 @@ import java.io.File;
 public class App {
 
      // Validation method for user integer input
-    
     public static boolean validateIntegerInput(String input, int max) {
         int number;
         try {
@@ -47,7 +46,8 @@ public class App {
             System.out.println(i + 1 + ". " + taskTitle + " - due date : " + taskDueDate + "\n description: " + taskDescription);  
             }
     }
-//TODO Files
+    
+    // Method to load tasks from a File
     private static ArrayList<Task> loadTasksFromFile(String fileName) {
         ArrayList<Task> taskList = new ArrayList<>();
         try {
@@ -67,7 +67,8 @@ public class App {
             return taskList;
         }
     }
-    // Save the tasklist to a file
+
+    // Method to save the tasks to a file
     private static void saveTasksToFile(ArrayList<Task> taskList, String fileName) {
         try {
             //Convert tasks to csv string, save them to file, each task in new line
@@ -196,7 +197,6 @@ public class App {
                     Task selectedTask = taskList.get(taskIndex);
 
                     // Prompt user for updated task details
-                    //TODO validate user input
                     String newTitle = "";
                     System.out.println("Enter new task title: ");
                     String newTitleInput = scanner.nextLine();
@@ -216,10 +216,16 @@ public class App {
                     } else {
                         newDescription = newDescriptionInput;
                     }
-                    //TODO
+                    //TODO validate new date
                     System.out.println(" Enter new due date (dd-MM-yy): ");
+                    LocalDate newDueDate;
                     String newDueDateString = scanner.nextLine();
-                    LocalDate newDueDate = LocalDate.parse(newDueDateString);
+                    if (newDueDateString.isEmpty()){
+                        newDueDate = LocalDate.parse(selectedTask.getDueDate());
+                    } else {
+                        newDueDate = LocalDate.parse(newDueDateString);
+                    }
+                    
 
                     // Update the selected task in the task list
                     selectedTask.setTitle(newTitle);
@@ -231,8 +237,8 @@ public class App {
                     break;
 
                 case 4:
-                    // Delete a Task
-                    //TODO list the tasks
+                    //List the tasks
+                    listTasks(taskList);
                     // Prompt user for the task to delete and validate the input
                     validInput = false;
                     String deleteIndex = "";
@@ -250,26 +256,28 @@ public class App {
                     System.out.println("Task deleted.");
 
                     break;
+
                 case 5:
                     // Display a list of all tasks in the task list
                     listTasks(taskList);
                     break;
+
                 case 6:
-                //TODO Save tasks to file
+                    //Save tasks to file
                 //TODO prompt filename, if exists- ask to overwrite, if not ask to create new
                     System.out.println("Enter a filename to save to: ");
                     String file = scanner.nextLine();
                     saveTasksToFile(taskList, file);
                     break;
+
                 case 7:
-                    //Ask user if they really want to quit, if yes quit, else return
+                    // Ask user if they really want to quit, if yes, quit, else return.
                     System.out.println("Do you want to quit? y/n: ");
                     String answer = scanner.nextLine();
                     
-                    if(answer.contains("y")) {
+                    if(answer.toLowerCase().matches("y")) {
                         scanner.close();
                         isRunning = false;
-                        System.out.println("quit");
                     }
                     break;
             }
